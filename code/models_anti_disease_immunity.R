@@ -6,7 +6,7 @@ dat$log_parsdens<-log(dat$parasitedensity, 10)
 
 #### Models Anti-disease immunity
 
-## Model 1
+## Model 1 
 mod_fev_0<-gam(temperature~age + log(eir_geom3) + log_parsdens+ s(uid_f, bs="re") + s(hhid_f, bs="re"), data=dat)
 save(mod_fev_0, file = "../output/fever/mod_fev_0.Rdata")
 
