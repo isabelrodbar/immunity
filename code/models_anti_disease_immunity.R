@@ -1,30 +1,44 @@
 
 library(mgcv)
 
-dat<-read.csv("../data/data_PRISM.csv")
+dat<-read.csv("data/data_PRISM.csv")
+
+### The individual (uid_f) and household (hhid_f) variables need to be factors
+dat$uid_f<-as.factor(dat$uid_f)
+dat$hhid_f<-as.factor(dat$hhid_f)
+
+#### Alternatively you can read the .Rdata file where "uid_f" and "hhid_f" are factors
+###load("data/data_PRISM.Rdata")
+
 dat$log_parsdens<-log(dat$parasitedensity, 10)
+
 
 #### Models Anti-disease immunity
 
 ## Model 1 
 mod_fev_0<-gam(temperature~age + log(eir_geom3) + log_parsdens+ s(uid_f, bs="re") + s(hhid_f, bs="re"), data=dat)
-save(mod_fev_0, file = "../output/fever/mod_fev_0.Rdata")
+save(mod_fev_0, file = "output/fever/mod_fev_0.Rdata")
 
 ## Model 2
 mod_fev_1<-gam(temperature~s(age) + s(log(eir_geom3)) + s(log_parsdens) + s(uid_f, bs="re") + s(hhid_f, bs="re"), data=dat)
-save(mod_fev_1, file = "../output/fever/mod_fev_1.Rdata")
+save(mod_fev_1, file = "output/fever/mod_fev_1.Rdata")
 
 ## Model 3
-mod_fev_2<-gam(temperature~te(age, log(eir_geom3), log_parsdens, bs="cr", k=5) + s(uid_f, bs="re") + s(hhid_f, bs="re"), data=dat)
-save(mod_fev_2, file = "../output/fever/mod_fev_2.Rdata")
+mod_fev_2a<-gam(temperature~age*log(eir_geom3)*log_parsdens + s(uid_f, bs="re") + s(hhid_f, bs="re"), data=dat)
+save(mod_fev_2a, file = "output/fever/mod_fev_2a.Rdata")
 
+## Model 4
+mod_fev_2<-gam(temperature~te(age, log(eir_geom3), log_parsdens, bs="cr", k=5) + s(uid_f, bs="re") + s(hhid_f, bs="re"), data=dat)
+save(mod_fev_2, file = "output/fever/mod_fev_2.Rdata")
 
 print(summary(mod_fev_0))
 print(summary(mod_fev_1))
+print(summary(mod_fev_2a))
 print(summary(mod_fev_2))
 
+
 ## compare AIC of these 3 models
-print(AIC(mod_fev_0, mod_fev_1, mod_fev_2))
+print(AIC(mod_fev_0, mod_fev_1, mod_fev_2a, mod_fev_2))
 
 #### Generate some output from best fitting model
 ### Generate two arrays containing predicted values 
@@ -44,7 +58,7 @@ arr.var[,,i]<-pred.i[[2]] ### Remember these are standard errors
 
 }
 
-save(arr.mat, file="../output/fever/arr.mat_fever.Rdata")
-save(arr.var, file="../output/fever/arr.var.Rdata")
+save(arr.mat, file="output/fever/arr.mat_fever.Rdata")
+save(arr.var, file="output/fever/arr.var.Rdata")
 
 

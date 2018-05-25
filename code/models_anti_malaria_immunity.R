@@ -1,9 +1,17 @@
 
 library(mgcv)
 
-dat<-read.csv("../data/data_PRISM.csv")
+dat<-read.csv("data/data_PRISM.csv")
+
+### The individual (uid_f) and household (hhid_f) variables need to be factors
+dat$uid_f<-as.factor(dat$uid_f)
+dat$hhid_f<-as.factor(dat$hhid_f)
+
+#### Alternatively you can read the .Rdata file where "uid_f" and "hhid_f" are factors
+###load("data/data_PRISM.Rdata")
+
 dat$log_parsdens<-log(dat$parasitedensity, 10)
-dat$mal.epis<-ifelse(dat$parasitedensity>0 & dat$febrile==1, 1, 0)
+dat$mal.epis<-ifelse(dat$parasitedensity>0 & dat$febrile=="Yes", 1, 0)
 
 #### Models Anti-malaria immunity
 
@@ -13,18 +21,23 @@ save(mod_mal_0, file="output/malaria/mod_mal_0.Rdata")
 
 ## Model 2
 mod_mal_1<-gam(mal.epis~s(age) + s(log(eir_geom3))+ s(uid_f, bs="re") + s(hhid_f, bs="re") , family="binomial", data=dat)
-save(mod_mal_1, file="../output/malaria/mod_mal_1.Rdata")
+save(mod_mal_1, file="output/malaria/mod_mal_1.Rdata")
 
 ## Model 3
+mod_mal_2a<-gam(mal.epis~age*log(eir_geom3)+ s(uid_f, bs="re") + s(hhid_f, bs="re"), family="binomial", data=dat)
+save(mod_mal_2a, file="output/malaria/mod_mal_2a.Rdata")
+
+## Model 4
 mod_mal_2<-gam(mal.epis~te(age, log(eir_geom3), bs="cr", k=5)+ s(uid_f, bs="re") + s(hhid_f, bs="re"), family="binomial", data=dat)
-save(mod_mal_2, file="../output/malaria/mod_mal_2.Rdata")
+save(mod_mal_2, file="output/malaria/mod_mal_2.Rdata")
 
 print(summary(mod_mal_0))
 print(summary(mod_mal_1))
+print(summary(mod_mal_2a))
 print(summary(mod_mal_2))
 
 ## compare AIC of these 3 models
-print(AIC(mod_mal_0, mod_mal_1, mod_mal_2))
+print(AIC(mod_mal_0, mod_mal_1, mod_mal_2a, mod_mal_2))
 
 
 #### Generate some output from model 2
@@ -37,5 +50,5 @@ pred.mat_s<-matrix(pred.mod[[1]], ncol=40)
 pred.mat_s_se<-matrix(pred.mod[[2]], ncol=40)
 
 
-save(pred.mat_s, file="../output/malaria/pred.mat_mal_mod2.Rdata")
-save(pred.mat_s_se, file="../output/malaria/pred.mat_mal_mod2_se.Rdata") 
+save(pred.mat_s, file="output/malaria/pred.mat_mal_mod2.Rdata")
+save(pred.mat_s_se, file="output/malaria/pred.mat_mal_mod2_se.Rdata") 
