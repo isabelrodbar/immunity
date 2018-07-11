@@ -6,7 +6,7 @@ parasitedensity,Parasite density (parasites/uL) at current measurement,
 temperature,Temperature during current visit,
 eir_geom3,Average entomological inocculation rate during the study period (average number infectious bites per year),
 febrile,Reported fever in the past 24h OR objective fever during visit,"Yes, No"
-visittype,Type of visit,
+visittype,Type of visit, Not routine = passive case detection; Enrollment = active case detection; Routine= active case detection; T-cell visit=active case detection
 past_3m,Observed number  of malaria infections during last 3 months,
 past_6m,Observed number  of malaria infections during last 6 months,
 wt_hbs,Indicator variable  - Wild type for HBS trait,"1=wildt ype, 2=not wild type"
